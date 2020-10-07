@@ -122,8 +122,8 @@ try:
             final_midpoint_2 = stats.mean(midpoint_array_2)
             print(f"Midpoint of eye is at X:{final_midpoint_1}, Y:{final_midpoint_2} and distance to face is {final_depth} meters")
             break
-        # cv2.namedWindow('RealSense', cv2.WINDOW_AUTOSIZE)
-        # cv2.imshow('RealSense', color_image)
-        # cv2.waitKey(1)
+        cv2.namedWindow('RealSense', cv2.WINDOW_AUTOSIZE)
+        cv2.imshow('RealSense', color_image)
+        cv2.waitKey(1)
 finally:
     pipe.stop()
