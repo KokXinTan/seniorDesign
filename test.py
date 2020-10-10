@@ -97,7 +97,7 @@ xmin_depth = int((xmin * expected + crop_start) * scale)
 ymin_depth = int((ymin * expected) * scale)
 xmax_depth = int((xmax * expected + crop_start) * scale)
 ymax_depth = int((ymax * expected) * scale)
-xmin_depth,ymin_depth,xmax_depth,ymax_depth
+print(xmin_depth,ymin_depth,xmax_depth,ymax_depth)
 cv2.rectangle(colorized_depth, (xmin_depth, ymin_depth),
              (xmax_depth, ymax_depth), (255, 255, 255), 2)
 plt.imshow(colorized_depth)
