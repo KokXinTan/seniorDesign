@@ -116,7 +116,7 @@ def face_detect():
                         # compute the (x, y)-coordinates of the bounding box
                         box = detections[0, 0, i, 3:7] * np.array([width, height, width, height])
                         (startX, startY, endX, endY) = box.astype("int")
-                        faceROI_color_image = color_image[startY:startY+endY, startX:startX+endX]
+
 
                         # Crop depth data:
                         depth = depth_image[startX:endX, startY:endY].astype(float)
@@ -126,30 +126,33 @@ def face_detect():
 
                         final_depth,_,_,_ = cv2.mean(depth)
 
+                        ################################################################################
                         # cv2.rectangle(color_image, (startX, startY), (endX, endY), (0, 0, 255), 2)
                         # plt.rcParams["axes.grid"] = False
                         # plt.rcParams['figure.figsize'] = [12, 6]
                         # plt.imshow(color_image)
                         # plt.show()
-
+                        ################################################################################
                         area = (endX - startX) * (endY - startY)
                         face_dict[(startX, startY, endX, endY, final_depth)] = area
 
                 maximum_face = max(face_dict, key=face_dict.get)
                 (startX, startY, endX, endY, final_depth) = maximum_face
+                faceROI_color_image = color_image[startY:startY+endY, startX:startX+endX]
+                ################################################################################
                 # print("Showing selected face")
                 # cv2.rectangle(color_image, (startX, startY), (endX, endY), (255, 0, 0), 2)
                 # plt.rcParams["axes.grid"] = False
                 # plt.rcParams['figure.figsize'] = [12, 6]
                 # plt.imshow(color_image)
                 # plt.show()
-
+                ################################################################################
                 eyes = eyes_cascade.detectMultiScale(faceROI_color_image)
                 if(len(eyes) != 2):
                     # get XY using midpoint of face
                     midpoint_1 = int((startX + endX)/2)
                     midpoint_2 = int((startY + endY)/2)
-
+                    ################################################################################
                     # eye_center1 = (midpoint_1, midpoint_2)
                     # radius1 = int(round(0.25))
                     # cv2.circle(color_image, eye_center1, radius1, (255, 0, 0 ), 4)
@@ -157,7 +160,7 @@ def face_detect():
                     # plt.rcParams['figure.figsize'] = [12, 6]
                     # plt.imshow(color_image)
                     # plt.show()
-
+                    ################################################################################
                     # print(midpoint_1, midpoint_2)
                     print("Used midpoint")
 
@@ -166,7 +169,7 @@ def face_detect():
                     middle_y_1 = startY + eyes[0][1] + (eyes[0][3]//2)
                     middle_x_2 = startX + eyes[1][0] + (eyes[1][2]//2)
                     middle_y_2 = startY + eyes[1][1] + (eyes[1][3]//2)
-
+                    ################################################################################
                     # eye_center1 = (middle_x_1, middle_y_1)
                     # eye_center2 = (middle_x_2, middle_y_2)
                     # radius1 = int(round((eyes[0][2] + eyes[0][3])*0.25))
@@ -177,7 +180,7 @@ def face_detect():
                     # plt.rcParams['figure.figsize'] = [12, 6]
                     # plt.imshow(color_image)
                     # plt.show()
-
+                    ################################################################################
                     midpoint_1 = int((middle_x_1 + middle_x_2) / 2)
                     midpoint_2 = int((middle_y_1 + middle_y_2) / 2)
                     # print(midpoint_1, midpoint_2)
