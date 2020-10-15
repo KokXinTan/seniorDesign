@@ -37,6 +37,7 @@ def face_detect():
     midpoint_array_1 = list()
     midpoint_array_2 = list()
     output_list = list()
+    face_dict = dict()
     try:
         while True:
             # Store next frameset for later processing:
@@ -102,7 +103,7 @@ def face_detect():
             blob = cv2.dnn.blobFromImage(crop_img, 1.0, (300, 300), (104.0, 177.0, 123.0))
             net.setInput(blob, "data")
             detections = net.forward("detection_out")
-            print(current_frame)
+
             if current_frame >= 10:
 
                 # loop over the detections
@@ -125,53 +126,62 @@ def face_detect():
 
                         final_depth,_,_,_ = cv2.mean(depth)
 
-                        cv2.rectangle(color_image, (startX, startY), (endX, endY), (0, 0, 255), 2)
-                        plt.rcParams["axes.grid"] = False
-                        plt.rcParams['figure.figsize'] = [12, 6]
-                        plt.imshow(color_image)
-                        plt.show()
+                        # cv2.rectangle(color_image, (startX, startY), (endX, endY), (0, 0, 255), 2)
+                        # plt.rcParams["axes.grid"] = False
+                        # plt.rcParams['figure.figsize'] = [12, 6]
+                        # plt.imshow(color_image)
+                        # plt.show()
 
-                        eyes = eyes_cascade.detectMultiScale(faceROI_color_image)
-                        if(len(eyes) != 2):
-                            # get XY using midpoint of face
-                            midpoint_1 = int((startX + endX)/2)
-                            midpoint_2 = int((startY + endY)/2)
+                        area = (endX - startX) * (endY - startY)
+                        face_dict[(startX, startY, endX, endY, final_depth)] = area
 
-                            eye_center1 = (midpoint_1, midpoint_2)
-                            radius1 = int(round(0.25))
-                            cv2.circle(color_image, eye_center1, radius1, (255, 0, 0 ), 4)
-                            plt.rcParams["axes.grid"] = False
-                            plt.rcParams['figure.figsize'] = [12, 6]
-                            plt.imshow(color_image)
-                            plt.show()
+                maximum_face = max(face_dict, key=face_dict.get)
+                (startX, startY, endX, endY, final_depth) = maximum_face
+                # print("Showing selected face")
+                # cv2.rectangle(color_image, (startX, startY), (endX, endY), (255, 0, 0), 2)
+                # plt.rcParams["axes.grid"] = False
+                # plt.rcParams['figure.figsize'] = [12, 6]
+                # plt.imshow(color_image)
+                # plt.show()
 
-                            print(midpoint_1, midpoint_2)
-                            print("Used midpoint")
-                            break
+                eyes = eyes_cascade.detectMultiScale(faceROI_color_image)
+                if(len(eyes) != 2):
+                    # get XY using midpoint of face
+                    midpoint_1 = int((startX + endX)/2)
+                    midpoint_2 = int((startY + endY)/2)
 
-                        else:
-                            middle_x_1 = startX + eyes[0][0] + (eyes[0][2]//2)
-                            middle_y_1 = startY + eyes[0][1] + (eyes[0][3]//2)
-                            middle_x_2 = startX + eyes[1][0] + (eyes[1][2]//2)
-                            middle_y_2 = startY + eyes[1][1] + (eyes[1][3]//2)
+                    # eye_center1 = (midpoint_1, midpoint_2)
+                    # radius1 = int(round(0.25))
+                    # cv2.circle(color_image, eye_center1, radius1, (255, 0, 0 ), 4)
+                    # plt.rcParams["axes.grid"] = False
+                    # plt.rcParams['figure.figsize'] = [12, 6]
+                    # plt.imshow(color_image)
+                    # plt.show()
 
-                            eye_center1 = (middle_x_1, middle_y_1)
-                            eye_center2 = (middle_x_2, middle_y_2)
-                            radius1 = int(round((eyes[0][2] + eyes[0][3])*0.25))
-                            radius2 = int(round((eyes[0][2] + eyes[0][3])*0.25))
-                            cv2.circle(color_image, eye_center1, radius1, (255, 0, 0 ), 4)
-                            cv2.circle(color_image, eye_center2, radius2, (255, 0, 0 ), 4)
-                            plt.rcParams["axes.grid"] = False
-                            plt.rcParams['figure.figsize'] = [12, 6]
-                            plt.imshow(color_image)
-                            plt.show()
+                    # print(midpoint_1, midpoint_2)
+                    print("Used midpoint")
 
-                            midpoint_1 = int((middle_x_1 + middle_x_2) / 2)
-                            midpoint_2 = int((middle_y_1 + middle_y_2) / 2)
-                            print(midpoint_1, midpoint_2)
-                            print("Used Haar")
-                            break
+                else:
+                    middle_x_1 = startX + eyes[0][0] + (eyes[0][2]//2)
+                    middle_y_1 = startY + eyes[0][1] + (eyes[0][3]//2)
+                    middle_x_2 = startX + eyes[1][0] + (eyes[1][2]//2)
+                    middle_y_2 = startY + eyes[1][1] + (eyes[1][3]//2)
 
+                    # eye_center1 = (middle_x_1, middle_y_1)
+                    # eye_center2 = (middle_x_2, middle_y_2)
+                    # radius1 = int(round((eyes[0][2] + eyes[0][3])*0.25))
+                    # radius2 = int(round((eyes[0][2] + eyes[0][3])*0.25))
+                    # cv2.circle(color_image, eye_center1, radius1, (255, 0, 0 ), 4)
+                    # cv2.circle(color_image, eye_center2, radius2, (255, 0, 0 ), 4)
+                    # plt.rcParams["axes.grid"] = False
+                    # plt.rcParams['figure.figsize'] = [12, 6]
+                    # plt.imshow(color_image)
+                    # plt.show()
+
+                    midpoint_1 = int((middle_x_1 + middle_x_2) / 2)
+                    midpoint_2 = int((middle_y_1 + middle_y_2) / 2)
+                    # print(midpoint_1, midpoint_2)
+                    print("Used Haar")
 
                 other_depth = depth_frame.get_distance(midpoint_1, midpoint_2)
                 depth_point = rs.rs2_deproject_pixel_to_point(depth_intrin, [midpoint_1, midpoint_2], other_depth) #convert point to meters
@@ -179,12 +189,14 @@ def face_detect():
                 midpoint_array_2.append(depth_point[1])
                 depth_list_output.append(final_depth)
                 print(f"Midpoint of eye is X:{depth_point[0]}, y:{depth_point[1]} and distance to face is {final_depth}")
+                print()
+                face_dict.clear()
 
             if len(midpoint_array_1) >= 5:
                 final_depth = np.mean(depth_list_output, axis=0)
                 final_midpoint_1 = np.mean(midpoint_array_1, axis=0)
                 final_midpoint_2 = np.mean(midpoint_array_2, axis=0)
-                print(f"Midpoint of eye (in meters) is at X:{final_midpoint_1}, Y:{final_midpoint_2} and distance to face is {final_depth} meters")
+                print(f"Final midpoint of eye (in meters) is at X:{final_midpoint_1}, Y:{final_midpoint_2} and distance to face is {final_depth} meters")
                 output_list.append(final_midpoint_1)
                 output_list.append(final_midpoint_2)
                 output_list.append(final_depth)
