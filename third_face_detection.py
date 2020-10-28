@@ -111,7 +111,7 @@ def face_detect():
                     # extract the confidence
                     confidence = detections[0, 0, i, 2]
 
-                    if confidence > 0.65:
+                    if confidence > 0.5:
 
                         # compute the (x, y)-coordinates of the bounding box
                         box = detections[0, 0, i, 3:7] * np.array([width, height, width, height])
@@ -120,7 +120,9 @@ def face_detect():
 
                         # Crop depth data:
                         depth = depth_image[startX:endX, startY:endY].astype(float)
+                        # print('printing................')
                         # print(depth)
+                        # print(type(depth))
                         # Get data scale from the device and convert to meters
                         depth = depth * depth_scale
 
@@ -136,6 +138,8 @@ def face_detect():
                         area = (endX - startX) * (endY - startY)
                         face_dict[(startX, startY, endX, endY, final_depth)] = area
 
+                if len(face_dict) == 0:
+                    continue
                 maximum_face = max(face_dict, key=face_dict.get)
                 (startX, startY, endX, endY, final_depth) = maximum_face
                 faceROI_color_image = color_image[startY:startY+endY, startX:startX+endX]
@@ -204,7 +208,7 @@ def face_detect():
                 output_list.append(final_midpoint_2)
                 output_list.append(final_depth)
 
-                ser = serial.Serial('/dev/ttyAMA0', 9600, timeout = 1)
+                ser = serial.Serial('/dev/ttyS0', 9600, timeout = 1)
 
                 for values in output_list:
                     ser.write(str.encode(str(values) + " "))
